@@ -4,26 +4,52 @@ using UnityEngine;
 
 public class PlayerController : Human
 {
+    public int 
+        potions,
+        knifes;
+    public GameObject knifePrefab;
+    public Transform throwPosition;
     private Rigidbody rgbd;
     private float enemyDistance;
+    private CharacterController controller;
     void Start()
     {
         rgbd = GetComponent<Rigidbody>();
+        controller = GetComponent<CharacterController>();
         manager = GameManager.instance;
+    }
+
+    public void ThrowKnife(Vector3 spawnPosition)
+    {
+        Instantiate(knifePrefab, spawnPosition, transform.rotation);
     }
 
     public void EnableMovement()
     {
-        GetComponent<CharacterController>().enabled = true;
-        GetComponent<Movement>().enabled = true;
         rgbd.isKinematic = true;
+        controller.enabled = true;
+        GetComponent<Movement>().enabled = true;
+        knockedUp = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.GetComponent<Attack>() != null)
         {
-            Invoke("EnableMovement", 1f);
+            if (other.gameObject.GetComponent<Attack>().target == gameObject)
+            {
+                knockedUp = true;
+                Invoke("EnableMovement", 1f);
+            }
+        }
+
+        if (other.gameObject.GetComponent<InteractableItem>() != null)
+        {
+            InteractableItem item = other.gameObject.GetComponent<InteractableItem>();
+            if (item.type == ObjectType.Potion)
+                potions++;
+            else
+                knifes += 3;
         }
     }
 
@@ -46,6 +72,16 @@ public class PlayerController : Human
                 }
             }
             Attack(enemyCloser, 3);
+        }
+        if (Input.GetKeyDown(KeyCode.Q) && potions > 0)
+        {
+            potions--;
+            life += 4;
+        }
+        if (Input.GetKeyDown(KeyCode.E) && knifes > 0)
+        {
+            knifes--;
+            ThrowKnife(throwPosition.position);
         }
     }
 }

@@ -33,27 +33,20 @@ public class Attack : MonoBehaviour
             didHit = true;
             if (target.GetComponent<Enemy>() != null)
             {
-                Vector3 direction = (transform.position - target.transform.position) * -1;
-                direction = direction + new Vector3(0, 2.2f, 0);
                 target.GetComponent<NavMeshAgent>().enabled = false;
-                Rigidbody rgbd = target.GetComponent<Rigidbody>();
-                rgbd.isKinematic = false;
-                rgbd.velocity = Vector3.zero;
-                rgbd.AddForce(direction * 150);
-                Destroy(gameObject);
             }
             else if (target.GetComponent<PlayerController>() != null)
             {
-                Vector3 direction = (transform.position - target.transform.position) * -1;
-                direction = direction + new Vector3(0, 2.2f, 0);
                 target.GetComponent<CharacterController>().enabled = false;
                 target.GetComponent<Movement>().enabled = false;
-                Rigidbody rgbd = target.GetComponent<Rigidbody>();
-                rgbd.isKinematic = false;
-                rgbd.velocity = Vector3.zero;
-                rgbd.AddForce(direction * 150);
-                Destroy(gameObject);
             }
+            Vector3 direction = (transform.position - target.transform.position) * -1;
+            direction = direction + new Vector3(0, 2.2f, 0);
+            Rigidbody rgbd = target.GetComponent<Rigidbody>();
+            rgbd.isKinematic = false;
+            rgbd.velocity = Vector3.zero;
+            rgbd.AddForce(direction * 150);
+            Destroy(gameObject);
         }
     }
 }

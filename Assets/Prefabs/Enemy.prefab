@@ -99,11 +99,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7fa85a288f4295429f51de19a14a9db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 8
+  manager: {fileID: 0}
+  inGround: 1
+  knockedUp: 0
+  sightRange: 8
+  attackRange: 2
   patrolPoints:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  agent: {fileID: 0}
   patrolIndex: 0
 --- !u!1001 &1402103784218308513
 PrefabInstance:

@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Human : MonoBehaviour
 {
+    public int life;
     [HideInInspector] public GameManager manager;
+    [HideInInspector] public bool knockedUp;
 
     public void Attack(GameObject target, int damage)
     {
