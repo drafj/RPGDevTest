@@ -6,8 +6,8 @@ public class PlayerController : Human
 {
     public int 
         potions,
-        knifes;
-    public GameObject knifePrefab;
+        swords;
+    public GameObject swordPrefab;
     public Transform throwPosition;
     private Rigidbody rgbd;
     private float enemyDistance;
@@ -19,9 +19,10 @@ public class PlayerController : Human
         manager = GameManager.instance;
     }
 
-    public void ThrowKnife(Vector3 spawnPosition)
+    public void ThrowSword(Vector3 spawnPosition)
     {
-        Instantiate(knifePrefab, spawnPosition, transform.rotation);
+        Quaternion swordRotation = Quaternion.Euler(90f, transform.eulerAngles.y, transform.eulerAngles.z);
+        Instantiate(swordPrefab, spawnPosition, swordRotation);
     }
 
     public void EnableMovement()
@@ -49,7 +50,9 @@ public class PlayerController : Human
             if (item.type == ObjectType.Potion)
                 potions++;
             else
-                knifes += 3;
+                swords += 3;
+
+            Destroy(other.gameObject);
         }
     }
 
@@ -75,13 +78,17 @@ public class PlayerController : Human
         }
         if (Input.GetKeyDown(KeyCode.Q) && potions > 0)
         {
-            potions--;
-            life += 4;
+            if (life < 10)
+            {
+                potions--;
+                life += 4;
+                life = life > 10 ? 10 : life;
+            }
         }
-        if (Input.GetKeyDown(KeyCode.E) && knifes > 0)
+        if (Input.GetKeyDown(KeyCode.E) && swords > 0)
         {
-            knifes--;
-            ThrowKnife(throwPosition.position);
+            swords--;
+            ThrowSword(throwPosition.position);
         }
     }
 }
