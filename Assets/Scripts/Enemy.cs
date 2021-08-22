@@ -4,66 +4,91 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class Enemy : MonoBehaviour
+public class Enemy : Human
 {
-    public float range;
+    public float 
+        sightRange,
+        attackRange;
     public List<GameObject> patrolPoints = new List<GameObject>();
+    public NavMeshAgent agent;
     [SerializeField] private int patrolIndex = 0;
     private Vector3 actualPatrolPoint;
-    private Gamemanager manager = Gamemanager.instance;
-    private NavMeshAgent agent;
     private Vector3 playerPosition;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        manager = Gamemanager.instance;
-    }
+        manager = GameManager.instance;
 
-    private float DistanceTo(Vector3 obj)
-    {
-        Vector3 distance = (obj - transform.position);
-        float objectDistance = distance.magnitude;
-        return objectDistance;
+        StartCoroutine(EnemyBehaviour());
     }
 
     public void MoveToPoint(Vector3 point)
     {
+        if (agent.enabled)
         agent.SetDestination(point);
     }
 
-    private void EnemyBehaviour()
+    private IEnumerator EnemyBehaviour()
     {
-        playerPosition = manager.player.transform.position;
+        while (true)
+        {
+            playerPosition = manager.player.transform.position;
 
-        if (DistanceTo(playerPosition) < range)
-        {
-            Debug.Log("moving towards player");
-            MoveToPoint(playerPosition);
-        }
-        else
-        {
-            actualPatrolPoint = patrolPoints[patrolIndex].transform.position;
-            if (DistanceTo(actualPatrolPoint) > 1.25)
+            if (DistanceTo(playerPosition) <= sightRange)
             {
-                MoveToPoint(actualPatrolPoint);
+                if (DistanceTo(playerPosition) <= attackRange)
+                {
+                    agent.isStopped = true;
+                    Vector3 targetPlayer = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
+                    transform.LookAt(targetPlayer);
+                    Attack(manager.player, 1);
+                    yield return new WaitForSeconds(1.5f);
+                }
+                else
+                {
+                    agent.isStopped = false;
+                    MoveToPoint(playerPosition);
+                }
             }
             else
             {
-                Debug.Log("change patrol point");
-                patrolIndex++;
-                patrolIndex = patrolIndex == patrolPoints.Count ? 0 : patrolIndex;
+                if (patrolPoints.Count <= 0)
+                    yield return null;
+
+                actualPatrolPoint = patrolPoints[patrolIndex].transform.position;
+                if (DistanceTo(actualPatrolPoint) > 1.25)
+                {
+                    agent.stoppingDistance = 0.5f;
+                    MoveToPoint(actualPatrolPoint);
+                }
+                else
+                {
+                    patrolIndex++;
+                    patrolIndex = patrolIndex == patrolPoints.Count ? 0 : patrolIndex;
+                }
             }
+            yield return null;
         }
     }
 
-    void Update()
+    public void EnebleNormalBehaviour()
     {
-        EnemyBehaviour();
+        GetComponent<NavMeshAgent>().enabled = true;
+        GetComponent<Rigidbody>().isKinematic = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.GetComponent<Attack>() != null)
+        {
+            Invoke("EnebleNormalBehaviour", 1.5f);
+        }
     }
 
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.magenta;
         Gizmos.DrawWireSphere(transform.position, 8f);
     }
 }

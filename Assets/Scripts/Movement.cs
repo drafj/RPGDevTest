@@ -9,6 +9,27 @@ public class Movement : MonoBehaviour
     public float speed,
         turnSmoothTime,
         turnSmoothVelocity;
+    [SerializeField] private bool inGround;
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.transform.CompareTag("Ground"))
+        {
+            inGround = false;
+            GetComponent<CharacterController>().enabled = false;
+            GetComponent<Rigidbody>().isKinematic = false;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.CompareTag("Ground"))
+        {
+            inGround = true;
+            GetComponent<CharacterController>().enabled = true;
+            GetComponent<Rigidbody>().isKinematic = true;
+        }
+    }
 
     void Update()
     {

@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gamemanager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public static Gamemanager instance;
+    public static GameManager instance;
 
     public GameObject
-        player;
+        player,
+        attackHitbox;
 
     private void Awake()
     {
@@ -15,5 +16,11 @@ public class Gamemanager : MonoBehaviour
             instance = this;
         else
             Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
     }
 }
