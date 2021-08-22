@@ -14,14 +14,14 @@ public class Attack : MonoBehaviour
     private void Start()
     {
         rg = GetComponent<Rigidbody>();
-        rg.velocity = transform.forward * 580f * Time.deltaTime;
+        //rg.velocity = transform.forward * 480f * Time.deltaTime;
 
         StartCoroutine(AutoDestruction());
     }
 
     IEnumerator AutoDestruction()
     {
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(0.8f);
         if (!didHit)
             Destroy(gameObject);
     }
@@ -30,23 +30,21 @@ public class Attack : MonoBehaviour
     {
         if (other.gameObject == target)
         {
-            didHit = true;
-            if (target.GetComponent<Enemy>() != null)
+            if (target.GetComponent<Human>().life > 0)
             {
-                target.GetComponent<NavMeshAgent>().enabled = false;
+                didHit = true;
+                if (target.GetComponent<Enemy>() != null)
+                {
+                    target.GetComponent<NavMeshAgent>().enabled = false;
+                }
+                else if (target.GetComponent<PlayerController>() != null)
+                {
+                    target.GetComponent<CharacterController>().enabled = false;
+                    target.GetComponent<Movement>().enabled = false;
+                }
+                target.GetComponent<Human>().TakeDamage(damage);
+                Destroy(gameObject);
             }
-            else if (target.GetComponent<PlayerController>() != null)
-            {
-                target.GetComponent<CharacterController>().enabled = false;
-                target.GetComponent<Movement>().enabled = false;
-            }
-            Vector3 direction = (transform.position - target.transform.position) * -1;
-            direction = direction + new Vector3(0, 2.2f, 0);
-            Rigidbody rgbd = target.GetComponent<Rigidbody>();
-            rgbd.isKinematic = false;
-            rgbd.velocity = Vector3.zero;
-            rgbd.AddForce(direction * 150);
-            Destroy(gameObject);
         }
     }
 }

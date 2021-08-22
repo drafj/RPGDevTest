@@ -11,6 +11,7 @@ public class Enemy : Human
         attackRange;
     public List<GameObject> patrolPoints = new List<GameObject>();
     public NavMeshAgent agent;
+    public Transform hand;
     [SerializeField] private int patrolIndex = 0;
     private Vector3 actualPatrolPoint;
     private Vector3 playerPosition;
@@ -26,7 +27,10 @@ public class Enemy : Human
     public void MoveToPoint(Vector3 point)
     {
         if (agent.enabled)
-        agent.SetDestination(point);
+        {
+            agent.SetDestination(point);
+            anim.SetBool("Running", true);
+        }
     }
 
     private IEnumerator EnemyBehaviour()
@@ -42,7 +46,7 @@ public class Enemy : Human
                     agent.isStopped = true;
                     Vector3 targetPlayer = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
                     transform.LookAt(targetPlayer);
-                    Attack(manager.player, 1);
+                    Attack(manager.player, 2, hand);
                     yield return new WaitForSeconds(2.5f);
                 }
                 else
@@ -76,9 +80,11 @@ public class Enemy : Human
 
     public void EnebleNormalBehaviour()
     {
-        knockedUp = false;
-        GetComponent<NavMeshAgent>().enabled = true;
-        GetComponent<Rigidbody>().isKinematic = true;
+        if (life > 0)
+        {
+            knockedUp = false;
+            GetComponent<NavMeshAgent>().enabled = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -89,25 +95,6 @@ public class Enemy : Human
             Invoke("EnebleNormalBehaviour", 2f);
         }
     }
-
-    /*private void OnCollisionExit(Collision collision)
-    {
-        if (collision.transform.CompareTag("Ground"))
-        {
-            inGround = false;
-            GetComponent<Rigidbody>().isKinematic = false;
-            Debug.Log("saliendo del piso");
-        }
-    }*/
-
-    /*void Update()
-    {
-        if (knockedUp)
-        {
-            GetComponent<Rigidbody>().isKinematic = false;
-            GetComponent<NavMeshAgent>().enabled = false;
-        }
-    }*/
 
     private void OnDrawGizmos()
     {
