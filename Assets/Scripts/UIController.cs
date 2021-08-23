@@ -38,11 +38,6 @@ public class UIController : MonoBehaviour
         Cursor.visible = false;
     }
 
-    public void Play()
-    {
-        SceneManager.LoadScene("GameplayScene");
-    }
-
     public void Quit()
     {
         Application.Quit();
@@ -54,10 +49,9 @@ public class UIController : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    public void BackToMenu()
+    public void SetTimeScale(int scale)
     {
-        SceneManager.LoadScene("HomeScene");
-        Time.timeScale = 1;
+        Time.timeScale = scale;
     }
 
     public void ShowSavedInfo()
