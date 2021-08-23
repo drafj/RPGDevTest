@@ -8,6 +8,9 @@ public class Human : MonoBehaviour
     public int life;
     public Animator anim;
     [HideInInspector] public GameManager manager;
+    private int 
+        battlesWon,
+        battlesLost;
 
     public void Attack(GameObject target, int damage, Transform hand)
     {
@@ -40,6 +43,9 @@ public class Human : MonoBehaviour
             {
                 GetComponent<Movement>().enabled = false;
                 GetComponent<CharacterController>().enabled = false;
+                battlesLost = PlayerPrefs.GetInt("battles lost", 0);
+                battlesLost++;
+                PlayerPrefs.SetInt("battles lost", battlesLost);
                 manager.uiController.End("you lose");
             }
             if (GetComponent<Enemy>() != null)
@@ -48,6 +54,9 @@ public class Human : MonoBehaviour
                 GetComponent<Enemy>().enabled = false;
                 GetComponent<NavMeshAgent>().enabled = false;
                 manager.player.GetComponent<PlayerController>().remainingEnemies--;
+                battlesWon = PlayerPrefs.GetInt("battles won", 0);
+                battlesWon++;
+                PlayerPrefs.SetInt("battles won", battlesWon);
                 if (manager.player.GetComponent<PlayerController>().remainingEnemies == 0)
                     manager.uiController.End("you win");
             }
