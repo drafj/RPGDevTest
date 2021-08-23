@@ -8,11 +8,9 @@ public class Human : MonoBehaviour
     public int life;
     public Animator anim;
     [HideInInspector] public GameManager manager;
-    [HideInInspector] public bool knockedUp;
 
     public void Attack(GameObject target, int damage, Transform hand)
     {
-        //GameObject go = Instantiate(manager.attackHitbox, transform.position + new Vector3(0f, 1f, 0f), transform.rotation);
         anim.SetBool("Running", false);
         anim.SetTrigger("Attacking");
         GameObject go = Instantiate(manager.attackHitbox, hand);
@@ -31,6 +29,8 @@ public class Human : MonoBehaviour
     {
         life -= damage;
         anim.SetBool("Running", false);
+        if (GetComponent<PlayerController>() != null)
+            manager.PlayerHealthBar.SetHealth(life);
         if (life <= 0)
         {
             anim.SetTrigger("Death");
@@ -38,22 +38,21 @@ public class Human : MonoBehaviour
             {
                 GetComponent<Movement>().enabled = false;
                 GetComponent<CharacterController>().enabled = false;
+                manager.uiController.End("you lose");
             }
             if (GetComponent<Enemy>() != null)
             {
+                GetComponent<Collider>().enabled = false;
                 GetComponent<Enemy>().enabled = false;
                 GetComponent<NavMeshAgent>().enabled = false;
+                manager.player.GetComponent<PlayerController>().remainingEnemies--;
+                if (manager.player.GetComponent<PlayerController>().remainingEnemies == 0)
+                    manager.uiController.End("you win");
             }
         }
         else
         {
             anim.SetTrigger("TakeDamage");
-            /*if (GetComponent<PlayerController>() != null)
-            {
-                GetComponent<Movement>().enabled = false;
-                yield return new WaitForSeconds(1f);
-                GetComponent<Movement>().enabled = true;
-            }*/
         }
     }
 }

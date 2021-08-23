@@ -12,7 +12,8 @@ public class Enemy : Human
     public List<GameObject> patrolPoints = new List<GameObject>();
     public NavMeshAgent agent;
     public Transform hand;
-    [SerializeField] private int patrolIndex = 0;
+    private int patrolIndex = 0;
+    private bool attacking;
     private Vector3 actualPatrolPoint;
     private Vector3 playerPosition;
 
@@ -39,21 +40,25 @@ public class Enemy : Human
         {
             playerPosition = manager.player.transform.position;
 
-            if (DistanceTo(playerPosition) <= sightRange && agent.isOnNavMesh)
+            if (DistanceTo(playerPosition) <= sightRange)
             {
-                if (DistanceTo(playerPosition) <= attackRange && agent.isOnNavMesh)
+                if (DistanceTo(playerPosition) <= attackRange && agent.enabled)
                 {
                     agent.isStopped = true;
+                    attacking = true;
                     Vector3 targetPlayer = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
                     transform.LookAt(targetPlayer);
                     Attack(manager.player, 2, hand);
                     yield return new WaitForSeconds(2.5f);
+                    attacking = false;
                 }
                 else
                 {
-                    yield return agent.isOnNavMesh && !knockedUp;
-                    agent.isStopped = false;
-                    MoveToPoint(playerPosition);
+                    if (!attacking && agent.enabled)
+                    {
+                        agent.isStopped = false;
+                        MoveToPoint(playerPosition);
+                    }
                 }
             }
             else
@@ -62,7 +67,7 @@ public class Enemy : Human
                     yield return null;
 
                 actualPatrolPoint = patrolPoints[patrolIndex].transform.position;
-                if (DistanceTo(actualPatrolPoint) > 1.25 && agent.isOnNavMesh)
+                if (DistanceTo(actualPatrolPoint) > 1.25 && agent.enabled)
                 {
                     agent.isStopped = false;
                     agent.stoppingDistance = 0.5f;
@@ -82,8 +87,7 @@ public class Enemy : Human
     {
         if (life > 0)
         {
-            knockedUp = false;
-            GetComponent<NavMeshAgent>().enabled = true;
+            agent.isStopped = false;
         }
     }
 
@@ -91,8 +95,15 @@ public class Enemy : Human
     {
         if (other.gameObject.GetComponent<Attack>() != null)
         {
-            knockedUp = true;
             Invoke("EnebleNormalBehaviour", 2f);
+        }
+
+        else if (other.gameObject.GetComponent<ThrowableWeapon>() != null && agent.enabled)
+        {
+            TakeDamage(1);
+            agent.isStopped = true;
+            Invoke("EnebleNormalBehaviour", 1.5f);
+            Destroy(other.gameObject);
         }
     }
 

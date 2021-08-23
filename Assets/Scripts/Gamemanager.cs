@@ -1,14 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+    public CinemachineFreeLook cam;
+    public UIController uiController;
     public GameObject
         player,
-        attackHitbox;
+        attackHitbox,
+        inventory;
+    public HealthBar 
+        PlayerHealthBar,
+        EnemyHealthBar;
+    public List<TextMeshProUGUI>
+        potions,
+        swords;
 
     private void Awake()
     {

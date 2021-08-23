@@ -35,7 +35,7 @@ public class Attack : MonoBehaviour
                 didHit = true;
                 if (target.GetComponent<Enemy>() != null)
                 {
-                    target.GetComponent<NavMeshAgent>().enabled = false;
+                    target.GetComponent<NavMeshAgent>().isStopped = true;
                 }
                 else if (target.GetComponent<PlayerController>() != null)
                 {

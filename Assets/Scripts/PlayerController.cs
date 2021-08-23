@@ -1,34 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using Cinemachine;
 
 public class PlayerController : Human
 {
-    public int 
+    public int
         potions,
-        swords;
+        swords,
+        remainingEnemies;
     public GameObject swordPrefab;
     public Transform hand;
     private bool attackColdown;
-    private float enemyDistance;
-    [SerializeField] private int isMovementDisabled;
+    private float 
+        enemyDistance,
+        temporalDistance;
+    private int isMovementDisabled;
+    private GameObject enemyCloser;
     private CharacterController controller;
     private Movement movement;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
         movement = GetComponent<Movement>();
         manager = GameManager.instance;
-    }
 
-    public IEnumerator ThrowSword(Vector3 spawnPosition)
-    {
-        yield return new WaitForSeconds(0.5f);
-        hand.gameObject.SetActive(false);
-        Quaternion swordRotation = Quaternion.Euler(90f, transform.eulerAngles.y, transform.eulerAngles.z);
-        Instantiate(swordPrefab, spawnPosition, swordRotation);
-        yield return new WaitForSeconds(0.3f);
-        hand.gameObject.SetActive(true);
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            remainingEnemies++;
+        }
     }
 
     public IEnumerator EnableMovement(bool justMove, float delay)
@@ -63,57 +65,113 @@ public class PlayerController : Human
         {
             InteractableItem item = other.gameObject.GetComponent<InteractableItem>();
             if (item.type == ObjectType.Potion)
+            {
                 potions++;
+                UpdateUIItem(manager.potions, potions);
+            }
             else
+            {
                 swords += 3;
+                UpdateUIItem(manager.swords, swords);
+            }
 
             Destroy(other.gameObject);
         }
     }
 
+    public void TakePotion()
+    {
+        if (life < 10 && potions > 0)
+        {
+            potions--;
+            UpdateUIItem(manager.potions, potions);
+            life += 4;
+            life = life > 10 ? 10 : life;
+            manager.PlayerHealthBar.SetHealth(life);
+        }
+    }
+
+    public void ThrowSword()
+    {
+        StartCoroutine(ThrowSwordCo());
+    }
+
+    public IEnumerator ThrowSwordCo()
+    {
+        if (swords > 0 && !attackColdown && movement.enabled)
+        {
+            attackColdown = true;
+            movement.enabled = false;
+            anim.SetBool("Running", false);
+            anim.SetTrigger("Attacking");
+            swords--;
+            UpdateUIItem(manager.swords, swords);
+            StartCoroutine(EnableMovement(true, 1.5f));
+            yield return new WaitForSeconds(0.45f);
+            hand.gameObject.SetActive(false);
+            Quaternion swordRotation = Quaternion.Euler(90f, transform.eulerAngles.y, transform.eulerAngles.z);
+            Instantiate(swordPrefab, hand.position, swordRotation);
+            yield return new WaitForSeconds(0.3f);
+            hand.gameObject.SetActive(true);
+        }
+    }
+
+    public void ClosestEnemy()
+    {
+        enemyCloser = null;
+        enemyDistance = 550;
+
+        foreach (var enemy in FindObjectsOfType<Enemy>())
+        {
+            Vector3 temporalUbication = enemy.transform.position;
+            temporalDistance = (temporalUbication - transform.position).magnitude;
+
+            if (temporalDistance < enemyDistance)
+            {
+                enemyDistance = temporalDistance;
+                enemyCloser = enemy.gameObject;
+            }
+        }
+    }
+
+    public void UpdateEnemyHealthBar()
+    {
+        ClosestEnemy();
+        manager.EnemyHealthBar.SetHealth(enemyCloser.GetComponent<Human>().life);
+        if (DistanceTo(enemyCloser.transform.position) <= 8 && enemyCloser.GetComponent<Human>().life > 0)
+            manager.EnemyHealthBar.gameObject.SetActive(true);
+        else
+            manager.EnemyHealthBar.gameObject.SetActive(false);
+    }
+
+    public void UpdateUIItem(List<TextMeshProUGUI> items, int actualCount)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            items[i].text = actualCount.ToString();
+        }
+    }
+
     void Update()
     {
+        UpdateEnemyHealthBar();
+
         if (life > 0)
         {
-            if (Input.GetMouseButtonDown(0) && !attackColdown && movement.enabled)
+            if (Input.GetMouseButtonDown(0) && !attackColdown && movement.enabled && !manager.inventory.activeSelf)
             {
                 attackColdown = true;
                 movement.enabled = false;
-                GameObject enemyCloser = null;
-                enemyDistance = 550;
-
-                foreach (var enemy in FindObjectsOfType<Enemy>())
-                {
-                    Vector3 temporalUbication = enemy.transform.position;
-                    float temporalDistance = (temporalUbication - transform.position).magnitude;
-
-                    if (temporalDistance < enemyDistance)
-                    {
-                        enemyDistance = temporalDistance;
-                        enemyCloser = enemy.gameObject;
-                    }
-                }
                 StartCoroutine(EnableMovement(true, 1f));
                 Attack(enemyCloser, 3, hand);
             }
-            if (Input.GetKeyDown(KeyCode.Q) && potions > 0)
+            if (Input.GetKeyDown(KeyCode.Q))
             {
-                if (life < 10)
-                {
-                    potions--;
-                    life += 4;
-                    life = life > 10 ? 10 : life;
-                }
+                TakePotion();
             }
-            if (Input.GetKeyDown(KeyCode.E) && swords > 0 && !attackColdown && !movement.enabled)
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                attackColdown = true;
-                movement.enabled = false;
-                anim.SetBool("Running", false);
-                anim.SetTrigger("Attacking");
-                swords--;
-                StartCoroutine(EnableMovement(true, 1f));
-                StartCoroutine(ThrowSword(hand.position));
+                ThrowSword();
             }
         }
     }

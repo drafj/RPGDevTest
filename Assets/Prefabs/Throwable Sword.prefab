@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3418011884733919902}
   - component: {fileID: 6956240857100633831}
   - component: {fileID: 5288860734170370957}
+  - component: {fileID: 136047101334266066}
   m_Layer: 0
   m_Name: Throwable Sword
   m_TagString: Untagged
@@ -111,3 +112,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b4b61d20f9f6bb4a9fedb18281e8d24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &136047101334266066
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3418011884731919454}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.29117957, y: 1.3027444, z: 0.14509292}
+  m_Center: {x: -0.00022505224, y: 0.44038734, z: -0.000000022351742}
