@@ -70,9 +70,9 @@ MonoBehaviour:
   life: 10
   anim: {fileID: 1596696142415968646}
   manager: {fileID: 0}
-  knockedUp: 0
   potions: 0
   swords: 0
+  remainingEnemies: 0
   swordPrefab: {fileID: 3418011884731919454, guid: 657b013df83a9124ebb1ad5a2d83660a, type: 3}
   hand: {fileID: 8635798649030748549}
 --- !u!114 &8625309143791250767
@@ -119,7 +119,7 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 1.95
+  m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &8625309144470450108

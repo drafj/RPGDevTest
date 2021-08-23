@@ -12,8 +12,10 @@ public class Enemy : Human
     public List<GameObject> patrolPoints = new List<GameObject>();
     public NavMeshAgent agent;
     public Transform hand;
-    private int patrolIndex = 0;
+    public LayerMask layer;
     public bool knocked;
+    private bool patrol;
+    private int patrolIndex = 0;
     private Vector3 actualPatrolPoint;
     private Vector3 playerPosition;
 
@@ -42,24 +44,45 @@ public class Enemy : Human
 
             if (DistanceTo(playerPosition) <= sightRange)
             {
-                if (DistanceTo(playerPosition) <= attackRange)
+                Vector3 direction = (playerPosition - transform.position);
+                RaycastHit hit;
+                if (Physics.Raycast(transform.position, direction, out hit, sightRange, ~layer))
                 {
-                    agent.isStopped = true;
-                    Vector3 targetPlayer = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
-                    transform.LookAt(targetPlayer);
-                    Attack(manager.player, 2, hand);
-                    yield return new WaitForSeconds(2.5f);
-                }
-                else
-                {
-                    if (!knocked)
+                    Debug.Log(hit.collider.name);
+                    if (hit.collider.GetComponent<PlayerController>() != null)
                     {
-                        MoveToPoint(playerPosition);
-                        agent.isStopped = false;
+                        patrol = false;
+                        if (DistanceTo(playerPosition) <= attackRange)
+                        {
+                            agent.isStopped = true;
+                            Vector3 targetPlayer = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
+                            transform.LookAt(targetPlayer);
+                            Attack(manager.player, 2, hand);
+                            yield return new WaitForSeconds(2.5f);
+                        }
+                        else
+                        {
+                            if (!knocked)
+                            {
+                                MoveToPoint(playerPosition);
+                                agent.isStopped = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        patrol = true;
+                        goto patrol;
                     }
                 }
             }
             else
+            {
+                patrol = true;
+                goto patrol;
+            }
+        patrol:
+            if (patrol)
             {
                 if (patrolPoints.Count <= 0)
                     yield return null;

@@ -5285,18 +5285,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7024758475166175781, guid: be796227cb83ad64b8ca5c6e8fc4e27f, type: 3}
-      propertyPath: cam
-      value: 
-      objectReference: {fileID: 150592157}
-    - target: {fileID: 7024758475166175781, guid: be796227cb83ad64b8ca5c6e8fc4e27f, type: 3}
-      propertyPath: swords
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 7024758475166175781, guid: be796227cb83ad64b8ca5c6e8fc4e27f, type: 3}
-      propertyPath: healthBar
-      value: 
-      objectReference: {fileID: 1134293488}
     - target: {fileID: 8625309143791250764, guid: be796227cb83ad64b8ca5c6e8fc4e27f, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -5886,6 +5874,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pauseMenu: {fileID: 1413936110}
   finishPanel: {fileID: 1334443446}
+  info: {fileID: 0}
 --- !u!1 &1614616276
 GameObject:
   m_ObjectHideFlags: 0
@@ -6716,10 +6705,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1402103784731759755, guid: a8f797bd2d8775e44b66b745f7f69044, type: 3}
-      propertyPath: patrolPoints.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402103784731759755, guid: a8f797bd2d8775e44b66b745f7f69044, type: 3}
       propertyPath: patrolPoints.Array.data[0]
       value: 
       objectReference: {fileID: 544286439}
@@ -7362,7 +7347,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1069567032315564, guid: bdf8e7438a7816543998181bd3067573, type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 1069567032315564, guid: bdf8e7438a7816543998181bd3067573, type: 3}
       propertyPath: m_TagString

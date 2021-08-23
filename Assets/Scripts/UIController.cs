@@ -8,9 +8,14 @@ public class UIController : MonoBehaviour
 {
     public GameObject pauseMenu;
     public GameObject finishPanel;
+    public TextMeshProUGUI info;
     private GameManager manager;
     private bool finish;
     private float giroSpeed;
+    private int
+        gamesPlayed,
+        battlesWon,
+        battlesLost;
 
     private void Start()
     {
@@ -33,6 +38,16 @@ public class UIController : MonoBehaviour
         Cursor.visible = false;
     }
 
+    public void Play()
+    {
+        SceneManager.LoadScene("GameplayScene");
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
     public void Retry()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -43,6 +58,24 @@ public class UIController : MonoBehaviour
     {
         SceneManager.LoadScene("HomeScene");
         Time.timeScale = 1;
+    }
+
+    public void ShowSavedInfo()
+    {
+        gamesPlayed = PlayerPrefs.GetInt("games played", 0);
+        battlesWon = PlayerPrefs.GetInt("battles won", 0);
+        battlesLost = PlayerPrefs.GetInt("battles lost", 0);
+
+        string temp = "games played: " + gamesPlayed + "\n" +
+            "battles won: " + battlesWon + "\n" +
+            "battles lost: " + battlesLost;
+
+        info.text = temp;
+    }
+
+    public void NewGame()
+    {
+        PlayerPrefs.DeleteAll();
     }
 
     public void End(string result)
@@ -71,7 +104,7 @@ public class UIController : MonoBehaviour
             Cursor.visible = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && SceneManager.GetActiveScene().name == "GameplayScene")
         {
             GameObject inv = manager.inventory;
             if (inv.activeSelf)
@@ -94,7 +127,7 @@ public class UIController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape) && !finish)
+        if (Input.GetKeyDown(KeyCode.Escape) && !finish && SceneManager.GetActiveScene().name == "GameplayScene")
         {
             if (pauseMenu.activeSelf)
             {

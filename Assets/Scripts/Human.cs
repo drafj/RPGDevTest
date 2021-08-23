@@ -54,11 +54,13 @@ public class Human : MonoBehaviour
                 GetComponent<Enemy>().enabled = false;
                 GetComponent<NavMeshAgent>().enabled = false;
                 manager.player.GetComponent<PlayerController>().remainingEnemies--;
-                battlesWon = PlayerPrefs.GetInt("battles won", 0);
-                battlesWon++;
-                PlayerPrefs.SetInt("battles won", battlesWon);
                 if (manager.player.GetComponent<PlayerController>().remainingEnemies == 0)
+                {
+                    battlesWon = PlayerPrefs.GetInt("battles won", 0);
+                    battlesWon++;
+                    PlayerPrefs.SetInt("battles won", battlesWon);
                     manager.uiController.End("you win");
+                }
             }
         }
         else
