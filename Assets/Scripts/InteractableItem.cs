@@ -5,4 +5,4 @@ public class InteractableItem : MonoBehaviour
     public ObjectType type;
 }
 
-public enum ObjectType { Potion, Knife }
+public enum ObjectType { Potion, Knife, PowerUp }

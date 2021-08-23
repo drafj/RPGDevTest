@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     public List<TextMeshProUGUI>
         potions,
         swords;
-    private int gamesPlayed;
+    public TextMeshProUGUI powerUp;
 
     private void Awake()
     {
@@ -34,9 +34,5 @@ public class GameManager : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
-        gamesPlayed = PlayerPrefs.GetInt("games played", 0);
-        gamesPlayed++;
-        PlayerPrefs.SetInt("games played", gamesPlayed);
     }
 }

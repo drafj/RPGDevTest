@@ -48,7 +48,6 @@ public class Enemy : Human
                 RaycastHit hit;
                 if (Physics.Raycast(transform.position, direction, out hit, sightRange, ~layer))
                 {
-                    Debug.Log(hit.collider.name);
                     if (hit.collider.GetComponent<PlayerController>() != null)
                     {
                         patrol = false;

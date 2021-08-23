@@ -12,7 +12,9 @@ public class PlayerController : Human
         remainingEnemies;
     public GameObject swordPrefab;
     public Transform hand;
-    private bool attackColdown;
+    private bool 
+        attackColdown,
+        powerUp;
     private float 
         enemyDistance,
         temporalDistance;
@@ -64,17 +66,22 @@ public class PlayerController : Human
         if (other.gameObject.GetComponent<InteractableItem>() != null)
         {
             InteractableItem item = other.gameObject.GetComponent<InteractableItem>();
-            if (item.type == ObjectType.Potion)
+            switch (item.type)
             {
-                potions++;
-                UpdateUIItem(manager.potions, potions);
+                case ObjectType.Potion:
+                    potions++;
+                    UpdateUIItem(manager.potions, potions);
+                    break;
+                case ObjectType.Knife:
+                    swords += 3;
+                    UpdateUIItem(manager.swords, swords);
+                    break;
+                case ObjectType.PowerUp:
+                    UpdateUIItem(manager.powerUp, 1);
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                swords += 3;
-                UpdateUIItem(manager.swords, swords);
-            }
-
             Destroy(other.gameObject);
         }
     }
@@ -94,6 +101,18 @@ public class PlayerController : Human
     public void ThrowSword()
     {
         StartCoroutine(ThrowSwordCo());
+    }
+
+    public void UsePowerUp()
+    {
+        int newCount = 0;
+        newCount = int.Parse(manager.powerUp.text);
+        if (newCount > 0)
+        {
+            powerUp = true;
+            newCount--;
+            manager.powerUp.text = newCount.ToString();
+        }
     }
 
     public IEnumerator ThrowSwordCo()
@@ -152,6 +171,11 @@ public class PlayerController : Human
         }
     }
 
+    public void UpdateUIItem(TextMeshProUGUI item, int actualCount)
+    {
+        item.text = actualCount.ToString();
+    }
+
     void Update()
     {
         UpdateEnemyHealthBar();
@@ -163,6 +187,9 @@ public class PlayerController : Human
                 attackColdown = true;
                 movement.enabled = false;
                 StartCoroutine(EnableMovement(true, 1f));
+                if (powerUp)
+                Attack(enemyCloser, 6, hand);
+                else
                 Attack(enemyCloser, 3, hand);
             }
             if (Input.GetKeyDown(KeyCode.Q))
