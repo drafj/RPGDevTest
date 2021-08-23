@@ -13,7 +13,7 @@ public class Enemy : Human
     public NavMeshAgent agent;
     public Transform hand;
     private int patrolIndex = 0;
-    private bool attacking;
+    public bool knocked;
     private Vector3 actualPatrolPoint;
     private Vector3 playerPosition;
 
@@ -27,37 +27,35 @@ public class Enemy : Human
 
     public void MoveToPoint(Vector3 point)
     {
-        if (agent.enabled)
+        if (agent.enabled && !knocked)
         {
-            agent.SetDestination(point);
             anim.SetBool("Running", true);
+            agent.SetDestination(point);
         }
     }
 
     private IEnumerator EnemyBehaviour()
     {
-        while (true)
+        while (agent.enabled)
         {
             playerPosition = manager.player.transform.position;
 
             if (DistanceTo(playerPosition) <= sightRange)
             {
-                if (DistanceTo(playerPosition) <= attackRange && agent.enabled)
+                if (DistanceTo(playerPosition) <= attackRange)
                 {
                     agent.isStopped = true;
-                    attacking = true;
                     Vector3 targetPlayer = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
                     transform.LookAt(targetPlayer);
                     Attack(manager.player, 2, hand);
                     yield return new WaitForSeconds(2.5f);
-                    attacking = false;
                 }
                 else
                 {
-                    if (!attacking && agent.enabled)
+                    if (!knocked)
                     {
-                        agent.isStopped = false;
                         MoveToPoint(playerPosition);
+                        agent.isStopped = false;
                     }
                 }
             }
@@ -67,7 +65,7 @@ public class Enemy : Human
                     yield return null;
 
                 actualPatrolPoint = patrolPoints[patrolIndex].transform.position;
-                if (DistanceTo(actualPatrolPoint) > 1.25 && agent.enabled)
+                if (DistanceTo(actualPatrolPoint) > 1.25)
                 {
                     agent.isStopped = false;
                     agent.stoppingDistance = 0.5f;
@@ -87,7 +85,7 @@ public class Enemy : Human
     {
         if (life > 0)
         {
-            agent.isStopped = false;
+            knocked = false;
         }
     }
 
@@ -100,9 +98,10 @@ public class Enemy : Human
 
         else if (other.gameObject.GetComponent<ThrowableWeapon>() != null && agent.enabled)
         {
-            TakeDamage(1);
             agent.isStopped = true;
-            Invoke("EnebleNormalBehaviour", 1.5f);
+            knocked = true;
+            TakeDamage(1);
+            Invoke("EnebleNormalBehaviour", 2f);
             Destroy(other.gameObject);
         }
     }

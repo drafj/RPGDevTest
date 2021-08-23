@@ -31,6 +31,8 @@ public class Human : MonoBehaviour
         anim.SetBool("Running", false);
         if (GetComponent<PlayerController>() != null)
             manager.PlayerHealthBar.SetHealth(life);
+        else
+            GetComponent<Enemy>().knocked = true;
         if (life <= 0)
         {
             anim.SetTrigger("Death");
