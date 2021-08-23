@@ -1,2 +1,4 @@
 # RPGDevTest
  
+el juego cuenta con un escenario de menú principal y con un esceneario de gameplay, cuenta con instrucciones basicas, sistema de guardado y se puede borrar la partida anterior, se cuenta con un sistema basico de inventario donde se pueden usar los siguientes items una vez obtenidos: poción que aumenta la vida cuando es usada, espada arrojadiza que hace daño moderado al enemigo y piedra de afilar que aumenta el daño del jugador, animaciones, barras de vida, un apartado en el hud para ver la cantidad restante de los objetos mas importantes y atajos para usar estos mismos, los enemigos cuentan con una patrulla basica y persiguen al jugador dependiendo de si esta en rango y de si esta en el area de visión, cuenta con un hud basico para navegar entre escenas y hacer las funciones solicitadas, cuenta tambien con pantalla de victoria y derrota y hay una pantalla de carga.
+ 
